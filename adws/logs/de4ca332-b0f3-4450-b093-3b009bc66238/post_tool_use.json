@@ -1,0 +1,20 @@
+[
+  {
+    "session_id": "de4ca332-b0f3-4450-b093-3b009bc66238",
+    "transcript_path": "/Users/kristopherfe/.claude/projects/-Users-kristopherfe-Projects-tac-5/de4ca332-b0f3-4450-b093-3b009bc66238.jsonl",
+    "cwd": "/Users/kristopherfe/Projects/tac-5/adws",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PostToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /Users/kristopherfe/Projects/tac-5/adws && find . -type f -name \"*.py\" | sort",
+      "description": "List Python files in tac-5 ADW"
+    },
+    "tool_response": {
+      "stdout": "./adw_build.py\n./adw_modules/__init__.py\n./adw_modules/agent.py\n./adw_modules/data_types.py\n./adw_modules/git_ops.py\n./adw_modules/github.py\n./adw_modules/state.py\n./adw_modules/utils.py\n./adw_modules/workflow_ops.py\n./adw_plan_build_test.py\n./adw_plan_build.py\n./adw_plan.py\n./adw_test.py\n./adw_tests/__init__.py\n./adw_tests/health_check.py\n./adw_tests/sandbox_poc.py\n./adw_tests/test_adw_test_e2e.py\n./adw_tests/test_agents.py\n./adw_triggers/__init__.py\n./adw_triggers/trigger_cron.py\n./adw_triggers/trigger_webhook.py",
+      "stderr": "",
+      "interrupted": false,
+      "isImage": false
+    }
+  }
+]

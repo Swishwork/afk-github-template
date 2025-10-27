@@ -1,0 +1,195 @@
+2025-10-26 14:26:54,659 - __main__ - INFO - 🧪 Starting ADW Workflow Integration Tests...
+2025-10-26 14:26:54,659 - __main__ - INFO - 
+============================================================
+2025-10-26 14:26:54,659 - __main__ - INFO - Running: Environment Setup
+2025-10-26 14:26:54,659 - __main__ - INFO - ============================================================
+2025-10-26 14:26:54,659 - __main__ - INFO - 🔧 Testing environment setup...
+2025-10-26 14:26:55,194 - __main__ - INFO - ✓ GitHub CLI authenticated
+2025-10-26 14:26:55,724 - __main__ - INFO - ✓ Claude Code CLI available
+2025-10-26 14:26:55,724 - __main__ - INFO - ✓ ADW modules import successfully
+2025-10-26 14:26:55,738 - __main__ - INFO - ✓ Repository context available: https://github.com/Swishwork/tac-5.git
+2025-10-26 14:26:55,738 - __main__ - INFO - ✅ Environment Setup: PASSED
+2025-10-26 14:26:55,738 - __main__ - INFO - 
+============================================================
+2025-10-26 14:26:55,738 - __main__ - INFO - Running: Core Workflow Components
+2025-10-26 14:26:55,738 - __main__ - INFO - ============================================================
+2025-10-26 14:26:55,738 - __main__ - INFO - ⚙️ Testing core workflow components...
+2025-10-26 14:26:55,739 - adw_modules.state - INFO - Saved state to /Users/kristopherfe/Projects/tac-5/agents/77d356ae/adw_state.json
+2025-10-26 14:26:55,739 - adw_modules.state - INFO - State updated by: ensure_adw_id
+2025-10-26 14:26:55,739 - __main__ - INFO - ✓ Generated ADW ID: 77d356ae
+2025-10-26 14:26:55,739 - __main__ - INFO - 🔍 Found existing state from /Users/kristopherfe/Projects/tac-5/agents/77d356ae/adw_state.json
+2025-10-26 14:26:55,739 - __main__ - INFO - State: {
+  "adw_id": "77d356ae",
+  "issue_number": "999",
+  "branch_name": null,
+  "plan_file": null,
+  "issue_class": null
+}
+2025-10-26 14:26:55,739 - __main__ - INFO - ✓ State management working
+2025-10-26 14:26:55,739 - __main__ - ERROR - Core workflow components test failed: 2 validation errors for GitHubIssue
+author
+  Field required [type=missing, input_value={'number': 999, 'title': ... '2024-01-01T00:00:00Z'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+url
+  Field required [type=missing, input_value={'number': 999, 'title': ... '2024-01-01T00:00:00Z'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.12/v/missing
+2025-10-26 14:26:55,739 - __main__ - ERROR - ❌ Core Workflow Components: FAILED
+2025-10-26 14:26:55,739 - __main__ - INFO - 
+============================================================
+2025-10-26 14:26:55,739 - __main__ - INFO - Running: Working Directory Fix
+2025-10-26 14:26:55,739 - __main__ - INFO - ============================================================
+2025-10-26 14:26:55,739 - __main__ - INFO - 📁 Testing working directory context...
+2025-10-26 14:26:55,739 - __main__ - INFO - Current working directory: /Users/kristopherfe/Projects/tac-5/adws
+2025-10-26 14:26:55,739 - __main__ - INFO - ✓ Project root: /Users/kristopherfe/Projects/tac-5
+2025-10-26 14:26:55,739 - __main__ - INFO - ✓ ADWs directory: /Users/kristopherfe/Projects/tac-5/adws
+2025-10-26 14:26:55,739 - __main__ - INFO - ✓ Specs directory: /Users/kristopherfe/Projects/tac-5/specs
+2025-10-26 14:26:55,739 - __main__ - INFO - ✓ Agents directory: /Users/kristopherfe/Projects/tac-5/agents
+2025-10-26 14:26:55,751 - __main__ - INFO - ✓ Git operations work from project root
+2025-10-26 14:26:55,752 - __main__ - INFO - ✅ Working Directory Fix: PASSED
+2025-10-26 14:26:55,752 - __main__ - INFO - 
+============================================================
+2025-10-26 14:26:55,752 - __main__ - INFO - Running: Pipeline Functionality
+2025-10-26 14:26:55,752 - __main__ - INFO - ============================================================
+2025-10-26 14:26:55,752 - __main__ - INFO - 🔄 Testing complete pipeline functionality...
+2025-10-26 14:26:55,752 - adw_modules.state - INFO - Saved state to /Users/kristopherfe/Projects/tac-5/agents/956b5349/adw_state.json
+2025-10-26 14:26:55,752 - adw_modules.state - INFO - State updated by: pipeline_test_init
+2025-10-26 14:26:55,752 - __main__ - INFO - 🔍 Found existing state from /Users/kristopherfe/Projects/tac-5/agents/956b5349/adw_state.json
+2025-10-26 14:26:55,752 - __main__ - INFO - State: {
+  "adw_id": "956b5349",
+  "issue_number": "998",
+  "branch_name": null,
+  "plan_file": null,
+  "issue_class": "/chore"
+}
+2025-10-26 14:26:55,752 - __main__ - INFO - ✓ State chaining works correctly
+2025-10-26 14:26:55,752 - __main__ - INFO - ✓ Error handling works for invalid states
+2025-10-26 14:26:55,752 - __main__ - INFO - ✅ Pipeline Functionality: PASSED
+2025-10-26 14:26:55,752 - __main__ - INFO - 
+============================================================
+2025-10-26 14:26:55,752 - __main__ - INFO - Running: ADW Plan Build Script
+2025-10-26 14:26:55,752 - __main__ - INFO - ============================================================
+2025-10-26 14:26:55,752 - __main__ - INFO - 🚀 Testing adw_plan_build.py script...
+2025-10-26 14:26:55,835 - __main__ - INFO - ✓ adw_plan_build.py script is functional
+2025-10-26 14:26:55,836 - __main__ - INFO - ✅ ADW Plan Build Script: PASSED
+2025-10-26 14:26:55,836 - __main__ - INFO - 
+============================================================
+2025-10-26 14:26:55,836 - __main__ - INFO - Running: Documentation and Reporting
+2025-10-26 14:26:55,836 - __main__ - INFO - ============================================================
+2025-10-26 14:26:55,836 - __main__ - INFO - 📝 Testing documentation and reporting...
+2025-10-26 14:26:55,837 - __main__ - INFO - ✓ ADW documentation exists
+2025-10-26 14:26:55,837 - __main__ - INFO - ✓ Test report generation works
+2025-10-26 14:26:55,837 - __main__ - INFO - ✅ Documentation and Reporting: PASSED
+2025-10-26 14:26:55,837 - __main__ - INFO - 📊 Test report saved to: workflow_test_report.json
+2025-10-26 14:26:55,837 - __main__ - INFO - 
+============================================================
+2025-10-26 14:26:55,837 - __main__ - INFO - TEST SUMMARY
+2025-10-26 14:26:55,837 - __main__ - INFO - ============================================================
+2025-10-26 14:26:55,837 - __main__ - INFO - Total Tests: 6
+2025-10-26 14:26:55,837 - __main__ - INFO - Passed: 5
+2025-10-26 14:26:55,837 - __main__ - INFO - Failed: 1
+2025-10-26 14:26:55,837 - __main__ - INFO - Success Rate: 83.3%
+2025-10-26 14:26:55,837 - __main__ - ERROR - ⚠️ Some tests failed. Please review the issues above.
+2025-10-26 14:27:09,561 - __main__ - INFO - ⚙️ Testing core workflow components...
+2025-10-26 14:27:09,561 - adw_modules.state - INFO - Saved state to /Users/kristopherfe/Projects/tac-5/agents/c2aba4fd/adw_state.json
+2025-10-26 14:27:09,561 - adw_modules.state - INFO - State updated by: ensure_adw_id
+2025-10-26 14:27:09,561 - __main__ - INFO - ✓ Generated ADW ID: c2aba4fd
+2025-10-26 14:27:09,561 - __main__ - INFO - 🔍 Found existing state from /Users/kristopherfe/Projects/tac-5/agents/c2aba4fd/adw_state.json
+2025-10-26 14:27:09,561 - __main__ - INFO - State: {
+  "adw_id": "c2aba4fd",
+  "issue_number": "999",
+  "branch_name": null,
+  "plan_file": null,
+  "issue_class": null
+}
+2025-10-26 14:27:09,561 - __main__ - INFO - ✓ State management working
+2025-10-26 14:27:09,561 - __main__ - ERROR - Core workflow components test failed: 1 validation error for GitHubIssue
+author
+  Input should be a valid dictionary or instance of GitHubUser [type=model_type, input_value='test-user', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/model_type
+2025-10-26 14:27:30,333 - __main__ - INFO - 🧪 Starting ADW Workflow Integration Tests...
+2025-10-26 14:27:30,334 - __main__ - INFO - 
+============================================================
+2025-10-26 14:27:30,334 - __main__ - INFO - Running: Environment Setup
+2025-10-26 14:27:30,334 - __main__ - INFO - ============================================================
+2025-10-26 14:27:30,334 - __main__ - INFO - 🔧 Testing environment setup...
+2025-10-26 14:27:30,858 - __main__ - INFO - ✓ GitHub CLI authenticated
+2025-10-26 14:27:31,373 - __main__ - INFO - ✓ Claude Code CLI available
+2025-10-26 14:27:31,374 - __main__ - INFO - ✓ ADW modules import successfully
+2025-10-26 14:27:31,384 - __main__ - INFO - ✓ Repository context available: https://github.com/Swishwork/tac-5.git
+2025-10-26 14:27:31,386 - __main__ - INFO - ✅ Environment Setup: PASSED
+2025-10-26 14:27:31,386 - __main__ - INFO - 
+============================================================
+2025-10-26 14:27:31,386 - __main__ - INFO - Running: Core Workflow Components
+2025-10-26 14:27:31,386 - __main__ - INFO - ============================================================
+2025-10-26 14:27:31,386 - __main__ - INFO - ⚙️ Testing core workflow components...
+2025-10-26 14:27:31,390 - adw_modules.state - INFO - Saved state to /Users/kristopherfe/Projects/tac-5/agents/9e90423f/adw_state.json
+2025-10-26 14:27:31,390 - adw_modules.state - INFO - State updated by: ensure_adw_id
+2025-10-26 14:27:31,390 - __main__ - INFO - ✓ Generated ADW ID: 9e90423f
+2025-10-26 14:27:31,391 - __main__ - INFO - 🔍 Found existing state from /Users/kristopherfe/Projects/tac-5/agents/9e90423f/adw_state.json
+2025-10-26 14:27:31,391 - __main__ - INFO - State: {
+  "adw_id": "9e90423f",
+  "issue_number": "999",
+  "branch_name": null,
+  "plan_file": null,
+  "issue_class": null
+}
+2025-10-26 14:27:31,391 - __main__ - INFO - ✓ State management working
+2025-10-26 14:27:31,391 - adw_modules.state - INFO - Saved state to /Users/kristopherfe/Projects/tac-5/agents/9e90423f/adw_state.json
+2025-10-26 14:27:31,391 - adw_modules.state - INFO - State updated by: test_core_workflow_components
+2025-10-26 14:27:31,391 - __main__ - INFO - ✓ Core workflow components functional
+2025-10-26 14:27:31,391 - __main__ - INFO - ✅ Core Workflow Components: PASSED
+2025-10-26 14:27:31,395 - __main__ - INFO - 
+============================================================
+2025-10-26 14:27:31,395 - __main__ - INFO - Running: Working Directory Fix
+2025-10-26 14:27:31,395 - __main__ - INFO - ============================================================
+2025-10-26 14:27:31,395 - __main__ - INFO - 📁 Testing working directory context...
+2025-10-26 14:27:31,395 - __main__ - INFO - Current working directory: /Users/kristopherfe/Projects/tac-5/adws
+2025-10-26 14:27:31,395 - __main__ - INFO - ✓ Project root: /Users/kristopherfe/Projects/tac-5
+2025-10-26 14:27:31,395 - __main__ - INFO - ✓ ADWs directory: /Users/kristopherfe/Projects/tac-5/adws
+2025-10-26 14:27:31,395 - __main__ - INFO - ✓ Specs directory: /Users/kristopherfe/Projects/tac-5/specs
+2025-10-26 14:27:31,395 - __main__ - INFO - ✓ Agents directory: /Users/kristopherfe/Projects/tac-5/agents
+2025-10-26 14:27:31,406 - __main__ - INFO - ✓ Git operations work from project root
+2025-10-26 14:27:31,406 - __main__ - INFO - ✅ Working Directory Fix: PASSED
+2025-10-26 14:27:31,406 - __main__ - INFO - 
+============================================================
+2025-10-26 14:27:31,406 - __main__ - INFO - Running: Pipeline Functionality
+2025-10-26 14:27:31,406 - __main__ - INFO - ============================================================
+2025-10-26 14:27:31,406 - __main__ - INFO - 🔄 Testing complete pipeline functionality...
+2025-10-26 14:27:31,407 - adw_modules.state - INFO - Saved state to /Users/kristopherfe/Projects/tac-5/agents/387c023a/adw_state.json
+2025-10-26 14:27:31,407 - adw_modules.state - INFO - State updated by: pipeline_test_init
+2025-10-26 14:27:31,407 - __main__ - INFO - 🔍 Found existing state from /Users/kristopherfe/Projects/tac-5/agents/387c023a/adw_state.json
+2025-10-26 14:27:31,407 - __main__ - INFO - State: {
+  "adw_id": "387c023a",
+  "issue_number": "998",
+  "branch_name": null,
+  "plan_file": null,
+  "issue_class": "/chore"
+}
+2025-10-26 14:27:31,407 - __main__ - INFO - ✓ State chaining works correctly
+2025-10-26 14:27:31,407 - __main__ - INFO - ✓ Error handling works for invalid states
+2025-10-26 14:27:31,407 - __main__ - INFO - ✅ Pipeline Functionality: PASSED
+2025-10-26 14:27:31,407 - __main__ - INFO - 
+============================================================
+2025-10-26 14:27:31,407 - __main__ - INFO - Running: ADW Plan Build Script
+2025-10-26 14:27:31,407 - __main__ - INFO - ============================================================
+2025-10-26 14:27:31,407 - __main__ - INFO - 🚀 Testing adw_plan_build.py script...
+2025-10-26 14:27:31,487 - __main__ - INFO - ✓ adw_plan_build.py script is functional
+2025-10-26 14:27:31,487 - __main__ - INFO - ✅ ADW Plan Build Script: PASSED
+2025-10-26 14:27:31,487 - __main__ - INFO - 
+============================================================
+2025-10-26 14:27:31,487 - __main__ - INFO - Running: Documentation and Reporting
+2025-10-26 14:27:31,487 - __main__ - INFO - ============================================================
+2025-10-26 14:27:31,487 - __main__ - INFO - 📝 Testing documentation and reporting...
+2025-10-26 14:27:31,488 - __main__ - INFO - ✓ ADW documentation exists
+2025-10-26 14:27:31,488 - __main__ - INFO - ✓ Test report generation works
+2025-10-26 14:27:31,488 - __main__ - INFO - ✅ Documentation and Reporting: PASSED
+2025-10-26 14:27:31,488 - __main__ - INFO - 📊 Test report saved to: workflow_test_report.json
+2025-10-26 14:27:31,488 - __main__ - INFO - 
+============================================================
+2025-10-26 14:27:31,488 - __main__ - INFO - TEST SUMMARY
+2025-10-26 14:27:31,489 - __main__ - INFO - ============================================================
+2025-10-26 14:27:31,489 - __main__ - INFO - Total Tests: 6
+2025-10-26 14:27:31,489 - __main__ - INFO - Passed: 6
+2025-10-26 14:27:31,489 - __main__ - INFO - Failed: 0
+2025-10-26 14:27:31,489 - __main__ - INFO - Success Rate: 100.0%
+2025-10-26 14:27:31,489 - __main__ - INFO - 🎉 All tests passed! ADW workflow is functional.
