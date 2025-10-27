@@ -9,7 +9,50 @@ This document summarizes all improvements made to the AFK GitHub template based 
 
 ---
 
-## Version 2.1 - Mobile UX Improvements (2025-01-27)
+## Version 2.1 - Mobile UX & Critical Bugfix (2025-01-27)
+
+### Critical Bugfix: State Preservation
+
+**Problem**: Webhook was destroying state data from previous workflow phases!
+
+**Root Cause**: When `adw_build` was triggered with an auto-detected or explicit ADW ID, the webhook would:
+1. Load existing state (containing `branch_name`, `plan_file`, `issue_class` from planning phase)
+2. Call `state.update()` with ONLY `adw_id` and `issue_number`
+3. Save the incomplete state, **overwriting** all the planning data
+4. Result: Build phase fails with "No branch name in state"
+
+**Example Failure Scenario**:
+```
+3:53 PM - Planning completes, saves full state ✅
+4:21 PM - User posts "adw_build"
+4:21 PM - Webhook auto-detects ID, loads state
+4:21 PM - Webhook OVERWRITES state with partial data ❌
+4:21 PM - Build starts, finds empty state ❌
+         Error: "No branch name in state - run adw_plan.py first"
+```
+
+**Fix**: Check if state already has `branch_name` before saving:
+```python
+if provided_adw_id:
+    state = ADWState(provided_adw_id)
+
+    # Only save if this is a NEW workflow (no branch_name yet)
+    # If branch_name exists, preserve the existing state!
+    if not state.data.get("branch_name"):
+        state.update(adw_id=provided_adw_id, issue_number=str(issue_number))
+        state.save("webhook_trigger")
+    else:
+        # Existing state - don't touch it!
+        print(f"Preserving existing state (branch: {state.data.get('branch_name')})")
+```
+
+**Impact**:
+- ✅ `adw_build` now works correctly after `adw_plan`
+- ✅ Multi-phase workflows preserve state
+- ✅ Prevents "No branch name" errors
+- ✅ Logged for debugging
+
+---
 
 ### Auto-Detection of ADW IDs
 

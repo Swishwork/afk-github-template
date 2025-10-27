@@ -219,13 +219,24 @@ async def github_webhook(request: Request):
         if workflow:
             # Use provided ADW ID or generate a new one
             adw_id = provided_adw_id or make_adw_id()
-            
-            # If ADW ID was provided, update/create state file
+
+            # If ADW ID was provided (continuing existing workflow), handle state carefully
+            # CRITICAL: Don't overwrite existing state from previous phases!
             if provided_adw_id:
                 state = ADWState(provided_adw_id)
-                state.update(adw_id=provided_adw_id, issue_number=str(issue_number))
-                state.save("webhook_trigger")
-            
+
+                # Only update/save state if this is a NEW workflow (no branch_name yet)
+                # If branch_name exists, it means planning phase already ran and saved state
+                # Overwriting would destroy branch_name, plan_file, and other critical data
+                if not state.data.get("branch_name"):
+                    # New workflow - initialize state
+                    state.update(adw_id=provided_adw_id, issue_number=str(issue_number))
+                    state.save("webhook_trigger")
+                    print(f"Initialized new state for ADW ID: {provided_adw_id}")
+                else:
+                    # Existing workflow - preserve state from previous phases
+                    print(f"Preserving existing state for ADW ID: {provided_adw_id} (branch: {state.data.get('branch_name')})")
+
             # Set up logger
             logger = setup_logger(adw_id, "webhook_trigger")
             logger.info(f"Detected workflow: {workflow} from content: {content_to_check[:100]}...")
