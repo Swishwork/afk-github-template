@@ -1,46 +1,185 @@
-# AFK GitHub Workflow Setup Guide
+# AFK GitHub Quick Start & Setup Guide
 
 **Version**: 1.0
 **Purpose**: Bootstrap AFK (Away From Keyboard) GitHub workflows in any project
-**Usage**: Copy this file to a new project and follow the automated setup instructions below
+**Usage**: Copy this single file to a new project and get started
 
 ---
 
-## 🚀 Quick Start (New Project Setup)
+## ⚠️ Prerequisites
 
-If you're setting up AFK GitHub in a **new project**, start here:
+Before starting setup, ensure you have:
 
-### Step 1: Copy This File
-Copy this `AFK_GITHUB_SETUP.md` to your new project's root directory.
+### Required Tools
+- **GitHub CLI** (`gh`) - Install: `brew install gh`
+- **Tailscale** (v1.88+) - Install: `brew install tailscale` or download from https://tailscale.com/download
+- **Claude Code CLI** - Install from https://docs.anthropic.com/en/docs/claude-code
+- **Python/uv** - Install: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- **jq** - Install: `brew install jq`
 
-### Step 2: Run Automated Assessment
-Use Claude Code to assess what's needed:
+### Shell Compatibility
 
-**Prompt to Claude Code:**
+**IMPORTANT: These scripts use bash syntax and may not work correctly in zsh (macOS default).**
+
+If you're on macOS or using zsh, you have two options:
+
+**Option 1: Switch to bash** (Recommended for manual commands)
+```bash
+bash
+# Then run the setup commands
 ```
-Analyze this project to determine what's needed to enable AFK GitHub workflows.
 
-Read AFK_GITHUB_SETUP.md and follow the "Automated Setup Assessment" section.
+**Option 2: Run scripts directly** (Recommended for automated setup)
+```bash
+# Scripts are already marked #!/bin/bash so they'll run correctly:
+bash scripts/setup_afk_github_full.sh
+```
 
-Search the codebase for:
-1. Existing .claude/commands/ structure
-2. Existing adws/ directory and ADW system
-3. Existing scripts/ directory
-4. Environment configuration (.env, .env.sample)
+**Note**: Multi-line commands copied directly to zsh may produce parse errors. If you see `(eval):1: parse error near ')'`, you're hitting the shell compatibility issue.
 
-Report:
+### Tailscale Version Check
+
+Check your Tailscale version - the CLI syntax changed in v1.88:
+```bash
+tailscale version
+```
+
+If you're on an older version, you may need to update: `brew upgrade tailscale`
+
+---
+
+## 🚀 Quick Start (For Developers)
+
+Setting up AFK GitHub in a **new project**? Choose your method:
+
+### Method 1: Fully Automated (Recommended)
+
+**The fastest way to get started:**
+
+1. **Copy required files** from `afk-github-template` to your project
+2. **Run the all-in-one setup script:**
+   ```bash
+   bash scripts/setup_afk_github_full.sh
+   ```
+
+That's it! The script handles everything:
+- ✅ Checks prerequisites
+- ✅ Detects available port
+- ✅ Configures GitHub repository
+- ✅ Starts Tailscale funnel
+- ✅ Creates GitHub webhook
+- ✅ Starts webhook server
+
+**Note**: You'll need to add your `ANTHROPIC_API_KEY` to `.env` before running the script.
+
+### Method 2: Claude Code Guided Setup
+
+For more control or troubleshooting:
+
+**Step 1: Copy This File**
+```bash
+cp /path/to/afk-github-template/AFK_GITHUB_SETUP.md /path/to/your-project/
+```
+
+**Step 2: Run Assessment in Claude Code**
+In your project, prompt Claude Code:
+```
+Read AFK_GITHUB_SETUP.md and analyze this project.
+
+Search the codebase for existing ADW components and report:
 - What's already present
-- What needs to be copied from afk-github-template project
-- What I can set up automatically
-- What requires manual user input
-- Step-by-step setup plan
+- What needs to be copied from afk-github-template
+- What you can setup automatically
+- What requires my input
+
+Then provide a step-by-step setup plan.
 ```
+
+**Step 3: Follow the Plan**
+Claude Code will guide you through:
+1. Copying required files from `/Users/kristopherfe/Projects/afk-github-template`
+2. Setting up dependencies
+3. Configuring environment variables
+4. Running the automated setup
+
+**Step 4: Test**
+```
+Read and execute: .claude/commands/afk_github/test_afk_github.md
+```
+
+**Your project now has AFK GitHub workflows enabled!**
 
 ---
 
-## 📋 Automated Setup Assessment
+## 📖 Background: What is AFK GitHub?
 
-**For Claude Code Agent**: When asked to set up AFK GitHub, follow these steps:
+AFK (Away From Keyboard) GitHub enables you to trigger AI-powered development workflows from your mobile device using the GitHub app. No desktop required.
+
+### How It Works
+
+When you create a GitHub issue from your phone with `adw_plan_build` in the body:
+
+1. **GitHub webhook fires** → Sends event to your Tailscale funnel URL
+2. **Tailscale funnel** → Securely forwards to your local webhook server
+3. **Webhook server** → Parses the event and triggers ADW system
+4. **ADW system** → Reads the issue, plans a solution using Claude Code
+5. **ADW implements** → Writes code, runs tests, creates commits
+6. **Pull request created** → ADW opens PR with implementation
+7. **Review on mobile** → You review and merge from GitHub mobile app
+
+### Key Components
+
+**ADW (AI Developer Workflow)**
+- Core automation engine that plans and implements solutions
+- Uses Claude Code CLI to execute development tasks
+- Reads GitHub issues → Plans → Implements → Creates PRs
+
+**Tailscale Funnel**
+- Secure encrypted tunnel that exposes your local webhook server to the internet
+- No port forwarding, no router configuration needed
+- Provides stable HTTPS URL for GitHub webhooks
+- End-to-end WireGuard encryption
+
+**Webhook Server** (`adws/adw_triggers/trigger_webhook.py`)
+- Listens for GitHub events (issue creation, issue comments)
+- Detects workflow triggers in issue body/comments
+- Spawns ADW processes to handle requests
+- Logs all activity for debugging
+
+**Claude Code Commands** (`.claude/commands/afk_github/`)
+- Modular setup commands for each component
+- Port detection, repo setup, webhook configuration
+- Orchestrated by master `setup_afk_github.md` command
+
+### Workflow Triggers
+
+Add these keywords to issue body or comments:
+- `adw_plan_build` - Plan and implement solution
+- `adw_plan_build_test` - Plan, implement, and run tests
+- `adw_build <adw_id>` - Continue from existing plan
+
+### Why This Approach?
+
+**Mobile-First Development**
+- Create issues, trigger workflows, review PRs - all from your phone
+- Perfect for capturing ideas on-the-go
+- No need to be at your desk to start development work
+
+**Secure & Private**
+- Tailscale provides enterprise-grade security
+- No public endpoints, no exposed ports
+- Runs entirely on your local machine
+
+**Multi-Project Support**
+- Run webhook servers for multiple projects simultaneously
+- Each project gets its own port and funnel
+- All managed through one Tailscale connection
+
+---
+
+## 📋 For Claude Code: Automated Setup Assessment
+
+**When asked to set up AFK GitHub, follow these steps:**
 
 ### Assessment Checklist
 
@@ -122,7 +261,8 @@ After running checks, provide this report to the user:
   1. [List auto-setup items]
 
 👤 You Need To Provide:
-  1. [List manual items]
+  1. ANTHROPIC_API_KEY - Get it here: https://console.anthropic.com/settings/keys
+  2. [Any other manual items]
 
 📋 Recommended Setup Plan:
   Step 1: [First step]
@@ -188,7 +328,17 @@ Files:
 └── stop_tailscale_funnel.sh
 ```
 
-#### 4. Spec File (Optional but Recommended)
+#### 4. Environment Template (Required)
+```
+Source: afk-github-template/.env.sample
+Destination: .env.sample (reference) and .env (your config)
+
+Copy .env.sample to .env and fill in:
+- ANTHROPIC_API_KEY (required)
+- Other values are auto-configured during setup
+```
+
+#### 5. Spec File (Optional but Recommended)
 ```
 Source: afk-github-template/specs/afk-github-workflow-setup.md
 Destination: specs/afk-github-workflow-setup.md
@@ -200,11 +350,17 @@ Destination: specs/afk-github-workflow-setup.md
 
 **For Claude Code Agent**: Execute these steps in order:
 
-### Phase 1: Copy Required Files
+### Phase 1: Copy Required Files & Setup Environment
 
 ```bash
 # Define source project path
 SOURCE_PROJECT="/Users/kristopherfe/Projects/afk-github-template"
+
+# Copy environment template
+cp "$SOURCE_PROJECT/.env.sample" .
+cp "$SOURCE_PROJECT/.env.sample" .env
+echo "✅ Copied .env.sample and created .env"
+echo "⚠️  IMPORTANT: Edit .env and add your ANTHROPIC_API_KEY"
 
 # Copy AFK GitHub commands
 mkdir -p .claude/commands
@@ -235,19 +391,48 @@ cp "$SOURCE_PROJECT/specs/afk-github-workflow-setup.md" specs/ 2>/dev/null || tr
 echo "✅ Files copied successfully"
 ```
 
+**Verify this phase succeeded before continuing:**
+```bash
+# Check that required files exist
+test -f .env && echo "✅ .env exists" || echo "❌ .env missing"
+test -d .claude/commands/afk_github && echo "✅ AFK commands copied" || echo "❌ Commands missing"
+test -d adws && echo "✅ ADW system present" || echo "❌ ADW missing"
+test -f scripts/start_tailscale_funnel.sh && echo "✅ Scripts copied" || echo "❌ Scripts missing"
+```
+
+---
+
 ### Phase 2: Verify Dependencies
 
 ```bash
 echo "Checking dependencies..."
 
 # Check each dependency and report
-gh --version || echo "❌ Install GitHub CLI: brew install gh"
-tailscale version || echo "❌ Install Tailscale: brew install tailscale"
-claude --version || echo "❌ Install Claude Code CLI"
-uv --version || echo "❌ Install uv: curl -LsSf https://astral.sh/uv/install.sh | sh"
+DEPS_OK=true
 
-echo "✅ Dependency check complete"
+gh --version >/dev/null 2>&1 && echo "✅ GitHub CLI installed" || { echo "❌ Install GitHub CLI: brew install gh"; DEPS_OK=false; }
+tailscale version >/dev/null 2>&1 && echo "✅ Tailscale installed" || { echo "❌ Install Tailscale: brew install tailscale"; DEPS_OK=false; }
+claude --version >/dev/null 2>&1 && echo "✅ Claude Code installed" || { echo "❌ Install Claude Code CLI"; DEPS_OK=false; }
+uv --version >/dev/null 2>&1 && echo "✅ uv installed" || { echo "❌ Install uv: curl -LsSf https://astral.sh/uv/install.sh | sh"; DEPS_OK=false; }
+jq --version >/dev/null 2>&1 && echo "✅ jq installed" || { echo "❌ Install jq: brew install jq"; DEPS_OK=false; }
+
+if [ "$DEPS_OK" = true ]; then
+    echo ""
+    echo "✅ All dependencies installed"
+else
+    echo ""
+    echo "❌ Some dependencies are missing. Please install them before continuing."
+    exit 1
+fi
 ```
+
+**Verify this phase succeeded before continuing:**
+```bash
+# Quick dependency verification
+command -v gh >/dev/null && command -v tailscale >/dev/null && command -v claude >/dev/null && command -v uv >/dev/null && command -v jq >/dev/null && echo "✅ All deps ready" || echo "❌ Missing deps"
+```
+
+---
 
 ### Phase 3: Run Setup Command
 
@@ -264,6 +449,32 @@ This will:
 4. Start Tailscale funnel
 5. Create GitHub webhook
 6. Start webhook server
+
+**Verify each step with these commands:**
+
+After port detection:
+```bash
+grep "^PORT=" .env && echo "✅ Port configured" || echo "❌ Port not set"
+```
+
+After Tailscale funnel start:
+```bash
+tailscale funnel status | grep -q "Funnel on" && echo "✅ Funnel running" || echo "❌ Funnel not active"
+```
+
+After webhook server start:
+```bash
+PORT=$(grep "^PORT=" .env | cut -d'=' -f2)
+lsof -i:$PORT | grep -iq python && echo "✅ Server running" || echo "❌ Server not running"
+```
+
+After webhook creation:
+```bash
+GITHUB_REPO_URL=$(grep "^GITHUB_REPO_URL=" .env | cut -d'=' -f2-)
+OWNER=$(echo "$GITHUB_REPO_URL" | sed 's|.*github.com[:/]||' | cut -d'/' -f1)
+REPO=$(echo "$GITHUB_REPO_URL" | sed 's|.*github.com[:/]||' | cut -d'/' -f2 | sed 's|\.git$||')
+gh api repos/$OWNER/$REPO/hooks 2>/dev/null | jq -r '.[].config.url' | grep -q "gh-webhook" && echo "✅ Webhook configured" || echo "❌ Webhook missing"
+```
 
 ---
 
@@ -288,19 +499,42 @@ This will:
 
 These require user input and cannot be fully automated:
 
-### 1. Environment Variables
-Add to `.env`:
+### 1. ANTHROPIC_API_KEY (Required)
+
+**This is the ONLY value you must provide manually.**
+
+After copying `.env.sample` to `.env`, add your Anthropic API key:
+
+**Get your API key here: https://console.anthropic.com/settings/keys**
+
 ```bash
-# AFK GitHub Configuration
-PORT=8002                                    # Next available port
+# Add to .env:
+ANTHROPIC_API_KEY=sk-ant-your-actual-key-here
+```
+
+**Steps:**
+1. Go to https://console.anthropic.com/settings/keys
+2. Click "Create Key" (if you don't have one)
+3. Copy the key (starts with `sk-ant-`)
+4. Paste it into `.env` as shown above
+
+**All other values in `.env` are auto-configured:**
+- `PORT` - Auto-detected by `detect_next_port` command
+- `GITHUB_REPO_URL` - Auto-configured by `setup_github_repo` command
+- `GITHUB_PAT` - Optional, defaults to `gh auth` if not set
+- `CLAUDE_CODE_PATH` - Optional, defaults to `claude` in PATH
+
+Example of a complete `.env` after setup:
+```bash
+# REQUIRED: You must provide this
+ANTHROPIC_API_KEY=sk-ant-api03-abc123...
+
+# AUTO-CONFIGURED: Set automatically during setup
+PORT=8002
 GITHUB_REPO_URL=https://github.com/owner/repo
 
-# ADW Configuration (Required)
-ANTHROPIC_API_KEY=sk-ant-...
-
-# Optional Configuration
-CLAUDE_CODE_PATH=claude                      # If not in PATH
-GITHUB_PAT=ghp_...                          # Optional, uses 'gh auth' if not set
+# OPTIONAL: Usually not needed
+CLAUDE_CODE_PATH=claude
 ```
 
 ### 2. GitHub Authentication
@@ -375,21 +609,77 @@ You can run AFK GitHub for multiple projects at once:
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+### Reset Everything and Start Fresh
 
-**Webhook not receiving events:**
-- Check Tailscale funnel is running: `tailscale funnel status`
-- Verify webhook URL in GitHub: `https://github.com/owner/repo/settings/hooks`
-- Check logs: `tail -f logs/afk_github_webhook_<port>.log`
+If setup gets into a bad state, use the reset script to completely reset:
 
-**Port already in use:**
-- Run: `.claude/commands/afk_github/detect_next_port.md`
-- Use the next available port
+```bash
+bash scripts/reset_afk_github.sh
+```
 
-**ADW not processing issues:**
-- Check webhook server logs
-- Verify `adw_plan_build` is in issue body
-- Check environment variables are set
+This will:
+- ✅ Stop the webhook server
+- ✅ Stop the Tailscale funnel
+- ✅ Optionally clear logs
+
+Then you can run setup again:
+```bash
+bash scripts/setup_afk_github_full.sh
+```
+
+### Common Issues & Solutions
+
+**Issue: Parse errors in zsh** (`(eval):1: parse error near ')'`)
+- **Solution**: Run `bash` first, or save commands to a `.sh` file and run with `bash script.sh`
+
+**Issue: Tailscale funnel commands fail** (`"the CLI for serve and funnel has changed"`)
+- **Solution**: Update Tailscale: `brew upgrade tailscale` (need v1.88+)
+
+**Issue: Webhook not receiving events**
+- **Check**: `tailscale funnel status` - Is funnel running on your port?
+- **Check**: GitHub webhook settings: `https://github.com/owner/repo/settings/hooks`
+- **Check**: Logs: `tail -f logs/afk_github_webhook_<port>.log`
+- **Fix**:
+  ```bash
+  # Restart funnel with correct port
+  source .env
+  tailscale funnel --bg $PORT
+  ```
+
+**Issue: Port already in use**
+- **Check**: `lsof -i:8001` (or your port)
+- **Fix**: Run port detection: `Read and execute .claude/commands/afk_github/detect_next_port.md`
+
+**Issue: Process matching fails** ("Python" not found but webhook is running)
+- **Root cause**: Case-sensitive grep looking for "Python" but process is "python3.1"
+- **Fix**: Already fixed in updated scripts (now uses `grep -iq python`)
+
+**Issue: ADW not processing issues**
+- **Check**: Webhook server logs for errors
+- **Check**: Verify `adw_plan_build` is in issue body (not just title)
+- **Check**: Environment variables are set: `cat .env | grep ANTHROPIC_API_KEY`
+- **Fix**:
+  ```bash
+  # Verify server is running
+  source .env
+  lsof -i:$PORT | grep -iq python && echo "✅ Running" || echo "❌ Not running"
+
+  # If not running, restart it
+  cd adws && nohup uv run python adw_triggers/trigger_webhook.py > ../logs/afk_github_webhook_${PORT}.log 2>&1 &
+  ```
+
+**Issue: Environment variables not loading**
+- **Root cause**: `source .env` doesn't work reliably across shells
+- **Fix**: Use explicit extraction:
+  ```bash
+  PORT=$(grep "^PORT=" .env | cut -d'=' -f2)
+  GITHUB_REPO_URL=$(grep "^GITHUB_REPO_URL=" .env | cut -d'=' -f2-)
+  ```
+
+**Issue: Funnel doesn't persist between terminal sessions**
+- **Root cause**: Backgrounding with `&` may not persist
+- **Fix**: Use `--bg` flag: `tailscale funnel --bg $PORT`
+- **Verify**: `tailscale funnel status` and wait 5 seconds, check again
 
 ---
 
@@ -456,6 +746,12 @@ For developers new to this system:
 
 ---
 
+## 📌 Template Location
+
+**Source Template**: `/Users/kristopherfe/Projects/afk-github-template`
+
+---
+
 **Questions?** Create an issue in the afk-github-template repo or consult the technical spec at `specs/afk-github-workflow-setup.md`
 
-**Ready to begin?** Copy this file to your new project and run the automated assessment!
+**Ready to begin?** Jump to the Quick Start section at the top of this file!
