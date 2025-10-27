@@ -18,6 +18,7 @@ Environment Requirements:
 """
 
 import os
+import re
 import subprocess
 import sys
 from typing import Optional
@@ -29,7 +30,7 @@ import uvicorn
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from adw_modules.utils import make_adw_id, setup_logger
-from adw_modules.github import make_issue_comment
+from adw_modules.github import make_issue_comment, fetch_issue_comments, extract_repo_path
 from adw_modules.workflow_ops import extract_adw_info
 from adw_modules.state import ADWState
 
@@ -51,12 +52,70 @@ ADW_BOT_IDENTIFIER = "[ADW-BOT]"
 AVAILABLE_WORKFLOWS = [
     "adw_plan",
     "adw_build",
-    "adw_test", 
+    "adw_test",
     "adw_plan_build",
     "adw_plan_build_test"
 ]
 
 
+def find_latest_adw_id_in_issue(issue_number: int) -> Optional[str]:
+    """
+    Auto-detect ADW ID from previous comments in the issue.
+
+    Searches issue comments in reverse chronological order (newest first)
+    for ADW IDs using multiple patterns:
+    1. Final planning state JSON: "adw_id": "75de9bea"
+    2. Explicit ID mentions: adw_id: 75de9bea
+    3. Comment prefixes: 75de9bea_ops:, 75de9bea_sdlc_planner:
+
+    Args:
+        issue_number: The GitHub issue number to search
+
+    Returns:
+        The most recent ADW ID found, or None if no ID is found
+    """
+    try:
+        # Get repository path from environment or git
+        repo_path = extract_repo_path()
+        if not repo_path:
+            print("Could not determine repository path for ADW ID detection")
+            return None
+
+        # Fetch all comments for this issue (newest first)
+        comments = fetch_issue_comments(repo_path, issue_number)
+
+        if not comments:
+            print(f"No comments found in issue #{issue_number}")
+            return None
+
+        # Patterns to search for ADW IDs (in order of preference)
+        # Pattern 1: JSON state - "adw_id": "75de9bea-..."
+        json_pattern = r'"adw_id":\s*"([a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12})"'
+
+        # Pattern 2: Explicit mention - adw_id: 75de9bea-...
+        explicit_pattern = r'adw_id:\s*([a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12})'
+
+        # Pattern 3: Comment prefix - 75de9bea-..._sdlc_planner:
+        prefix_pattern = r'([a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12})_(?:ops|sdlc_planner|sdlc_implementor|adw_classifier):'
+
+        # Search through comments (newest first)
+        for comment in comments:
+            comment_body = comment.get("body", "")
+
+            # Try each pattern
+            for pattern in [json_pattern, explicit_pattern, prefix_pattern]:
+                match = re.search(pattern, comment_body)
+                if match:
+                    adw_id = match.group(1)
+                    print(f"✅ Auto-detected ADW ID from issue #{issue_number}: {adw_id}")
+                    return adw_id
+
+        print(f"No ADW ID found in issue #{issue_number} comments")
+        return None
+
+    except Exception as e:
+        print(f"Error auto-detecting ADW ID: {e}")
+        return None
 
 
 @app.post("/gh-webhook")
@@ -114,11 +173,49 @@ async def github_webhook(request: Request):
                 if workflow:
                     trigger_reason = f"Comment with {workflow} workflow"
         
-        # Validate workflow constraints
+        # Validate workflow constraints and auto-detect ADW ID if needed
         if workflow == "adw_build" and not provided_adw_id:
-            print(f"adw_build requires an adw_id, skipping")
-            workflow = None
-        
+            # Try auto-detection from issue history
+            print(f"adw_build detected without explicit ADW ID - attempting auto-detection...")
+            detected_adw_id = find_latest_adw_id_in_issue(issue_number)
+
+            if detected_adw_id:
+                # Success! Use the detected ID
+                provided_adw_id = detected_adw_id
+                print(f"✅ Auto-detected ADW ID: {provided_adw_id}")
+
+                # Post helpful comment explaining auto-detection
+                try:
+                    make_issue_comment(
+                        str(issue_number),
+                        f"{ADW_BOT_IDENTIFIER} 💡 **Auto-detected ADW ID**: `{provided_adw_id}`\n\n"
+                        f"Found this ID from previous comments in this issue. Proceeding with `adw_build`...\n\n"
+                        f"_💡 Tip: You can always specify the ID explicitly with `adw_build {provided_adw_id[:8]}`_"
+                    )
+                except Exception as e:
+                    print(f"Failed to post auto-detection comment: {e}")
+            else:
+                # No ID found - post helpful error message
+                print(f"❌ No ADW ID found in issue history for adw_build")
+                try:
+                    make_issue_comment(
+                        str(issue_number),
+                        f"{ADW_BOT_IDENTIFIER} ❌ **Missing ADW ID**\n\n"
+                        f"`adw_build` requires an ADW ID to know which plan to continue from.\n\n"
+                        f"**Usage:**\n"
+                        f"- `adw_build <adw_id>` (e.g., `adw_build 75de9bea`)\n"
+                        f"- Or: `adw_build: description` with `adw_id: <adw_id>` on a separate line\n\n"
+                        f"**Finding the ADW ID:**\n"
+                        f"Look for the \"Final planning state\" comment from the planning phase, "
+                        f"or any comment with `adw_id: ...` in it.\n\n"
+                        f"**Alternative:**\n"
+                        f"Use `adw_plan_build` instead - it creates a new plan and builds it automatically!"
+                    )
+                except Exception as e:
+                    print(f"Failed to post error comment: {e}")
+
+                workflow = None  # Skip this workflow
+
         if workflow:
             # Use provided ADW ID or generate a new one
             adw_id = provided_adw_id or make_adw_id()

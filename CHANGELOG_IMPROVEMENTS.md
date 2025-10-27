@@ -1,15 +1,90 @@
 # AFK GitHub Template Improvements
 
 **Date**: 2025-01-27
-**Version**: 2.0 (Major improvements based on real-world usage feedback)
+**Version**: 2.1 (Auto-detection + UX improvements)
 
 ## Summary
 
-This document summarizes all improvements made to the AFK GitHub template based on feedback from actual usage in a new project. These changes address shell compatibility issues, outdated CLI syntax, and general setup pain points.
+This document summarizes all improvements made to the AFK GitHub template based on feedback from actual usage in multiple projects. These changes address shell compatibility issues, outdated CLI syntax, general setup pain points, and mobile UX improvements.
 
 ---
 
-## Critical Fixes Implemented
+## Version 2.1 - Mobile UX Improvements (2025-01-27)
+
+### Auto-Detection of ADW IDs
+
+**Problem**: When continuing work with `adw_build`, users had to manually copy/paste UUID from previous comments. On mobile devices, this is extremely difficult.
+
+**Solution**: Automatic detection of ADW IDs from issue history!
+
+#### Implementation Details
+
+**New Function**: `find_latest_adw_id_in_issue(issue_number)` in `trigger_webhook.py`
+
+Searches issue comments in reverse chronological order for ADW IDs using three robust patterns:
+1. **JSON state dumps**: `"adw_id": "75de9bea-..."`
+2. **Explicit mentions**: `adw_id: 75de9bea-...`
+3. **Comment prefixes**: `75de9bea-..._sdlc_planner:`
+
+#### User Experience
+
+**Before**:
+```
+User: adw_build
+Bot: ❌ Error: Missing ADW ID
+User: *scrolls through comments on mobile*
+User: *tries to copy UUID from comment*
+User: *gives up and uses desktop*
+```
+
+**After**:
+```
+User: adw_build
+Bot: 💡 Auto-detected ADW ID: 75de9bea-b0f3-4450-b093-3b009bc66238
+     Proceeding with adw_build...
+     ✅ [starts building]
+```
+
+#### Error Messages
+
+When auto-detection fails (no previous plan found), users get helpful guidance:
+
+```markdown
+❌ Missing ADW ID
+
+`adw_build` requires an ADW ID to know which plan to continue from.
+
+**Usage:**
+- `adw_build <adw_id>` (e.g., `adw_build 75de9bea`)
+- Or: `adw_build: description` with `adw_id: <adw_id>` on a separate line
+
+**Finding the ADW ID:**
+Look for the "Final planning state" comment from the planning phase,
+or any comment with `adw_id: ...` in it.
+
+**Alternative:**
+Use `adw_plan_build` instead - it creates a new plan and builds it automatically!
+```
+
+#### Benefits
+
+1. **Mobile-First**: No more copying UUIDs on mobile devices
+2. **Educational**: Error messages teach proper syntax
+3. **Transparent**: Bot explains when auto-detection is used
+4. **Backward Compatible**: Explicit IDs still work
+5. **Smart**: Finds the LATEST plan, not old ones
+
+#### Files Modified
+
+- `adws/adw_triggers/trigger_webhook.py`:
+  - Added `import re`
+  - Added imports: `fetch_issue_comments`, `extract_repo_path`
+  - Added function: `find_latest_adw_id_in_issue()` (~60 lines)
+  - Enhanced validation logic with auto-detection (~40 lines)
+
+---
+
+## Version 2.0 - Critical Fixes Implemented (2025-01-27)
 
 ### 1. Shell Compatibility (High Priority) ✅
 
